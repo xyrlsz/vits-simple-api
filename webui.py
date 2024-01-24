@@ -94,8 +94,8 @@ def start_api_server():
     os.system("python app.py")
 
 
-# thread1 = threading.Thread(target=start_api_server)
-# thread1.start()
+thread1 = threading.Thread(target=start_api_server)
+thread1.start()
 
 
 with gr.Blocks() as demo:
@@ -553,4 +553,4 @@ with gr.Blocks() as demo:
 
 if __name__ == "__main__":
     webbrowser.open(f"http://127.0.0.1:{WEBUI_PORT}")
-    demo.launch(server_port=WEBUI_PORT)
+    demo.launch(server_port=WEBUI_PORT,share=True)
