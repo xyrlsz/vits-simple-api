@@ -2,7 +2,7 @@ import os
 import time
 import uuid
 from io import BytesIO
-
+from werkzeug.datastructures import FileStorage
 from flask import request, jsonify, make_response, send_file, Blueprint
 from werkzeug.utils import secure_filename
 
@@ -415,7 +415,14 @@ def voice_bert_vits2_api():
         segment_size = get_param(request_data, "segment_size", config.bert_vits2_config.segment_size, int)
         use_streaming = get_param(request_data, 'streaming', config.bert_vits2_config.use_streaming, bool)
         emotion = get_param(request_data, 'emotion', config.bert_vits2_config.emotion, int)
-        reference_audio = request.files.get("reference_audio", None)
+        reference_audio = get_param(request_data, "reference_audio", "", str)
+        if reference_audio == "None":
+            reference_audio = request.files.get("reference_audio", None)
+        else:
+            reference_audio = FileStorage(
+                filename=reference_audio,
+                name="reference_audio",
+            )
         text_prompt = get_param(request_data, 'text_prompt', config.bert_vits2_config.text_prompt, str)
         style_text = get_param(request_data, 'style_text', config.bert_vits2_config.style_text, str)
         style_weight = get_param(request_data, 'style_weight', config.bert_vits2_config.style_weight, float)
