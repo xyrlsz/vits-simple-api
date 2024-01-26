@@ -18,13 +18,16 @@ def my_function():
     return "Hello, World!"
 
 
-def load_nested_set(text, text2, progress=gr.Progress()):
-    imgs = [[None] * 8] * 3
-    for img_set in progress.tqdm(imgs, desc="Nested list"):
-        time.sleep(2)
-        for img in progress.tqdm(img_set, desc="inner list"):
-            time.sleep(0.1)
-    return "done"
+def download_file(url, save_path, filename):
+    response = requests.get(url)
+    response.raise_for_status()
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    with open(os.path.join(save_path, filename), "wb") as file:
+        file.write(response.content)
+
+
+_save_path = "cache/audio/"
 
 
 def get_response(url: str):
@@ -166,7 +169,9 @@ with gr.Blocks() as demo:
                 text = text.replace(" ", "")
                 url = f"http://{HOST}:{API_PORT}/voice/vits?id={id}&format={format}&lang={lang}&length={length}&noise={noise}&noisew={noisew}&segment_size={segment_size}&streaming={streaming}&text={text}"
                 print(url)
-                return url
+                file_name = f"{id}.{format}"
+                download_file(url, _save_path, file_name)
+                return _save_path + file_name
 
             def check_is_done(
                 id: int,
@@ -293,7 +298,9 @@ with gr.Blocks() as demo:
                 text = text.replace(" ", "")
                 url = f"http://{HOST}:{API_PORT}/voice/w2v2-vits?id={id}&emotion={emotion}&format={format}&lang={lang}&length={length}&noise={noise}&noisew={noisew}&segment_size={segment_size}&streaming={streaming}&text={text}"
                 print(url)
-                return url
+                file_name = f"{id}.{format}"
+                download_file(url, _save_path, file_name)
+                return _save_path + file_name
 
             def check_is_done(
                 id: int,
@@ -469,7 +476,9 @@ with gr.Blocks() as demo:
                 text = text.replace(" ", "")
                 url = f"http://{HOST}:{API_PORT}/voice/bert-vits2?id={id}&format={format}&lang={lang}&length={length}&noise={noise}&noisew={noisew}&segment_size={segment_size}&sdp_radio={sdp_radio}&emotion={emotion}&reference_audio={reference_audio}&text_prompt={text_prompt}&style_text={style_text}&style_weight={style_weight}&streaming={streaming}&text={text}"
                 print(url)
-                return url
+                file_name = f"{id}.{format}"
+                download_file(url, _save_path, file_name)
+                return _save_path + file_name
 
             def check_is_done(
                 id: int,
@@ -553,4 +562,4 @@ with gr.Blocks() as demo:
 
 if __name__ == "__main__":
     webbrowser.open(f"http://127.0.0.1:{WEBUI_PORT}")
-    demo.launch(server_port=WEBUI_PORT,share=True)
+    demo.launch(server_port=WEBUI_PORT, share=True)
